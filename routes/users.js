@@ -6,4 +6,8 @@ router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
+router.all('/all', function(req, res, next) {
+  res.send('this is all');
+});
+
 module.exports = router;
