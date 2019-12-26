@@ -1,0 +1,297 @@
+ <% include header %>
+    <!-- Services -->
+    <div id="services" class="cards-1">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2>Lawyer List</h2>
+                    <h1><%= countryList() %></h1>
+                    <p class="p-heading p-large">We serve small and medium sized.</p>
+                </div> <!-- end of col -->
+            </div> <!-- end of row -->
+            <div class="row">
+
+              <div id="pageMsg"></div>
+
+              <%=
+              //  result
+              %>
+                <div class="col-lg-12">
+                  <table class="table">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Gender</th>
+                            <th>Country</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                           <% result.forEach(function(row) { %>
+                          <tr class="row-<%= row._id   %>">
+                            <td><%= row.name %></td>
+                            <td><%= row.mobile_no %></td>
+                            <td>
+                              <%  if (typeof row.email !== 'undefined') {  %>
+                              <%= row.email %>
+                              <%     }  %>
+                            </td>
+                            <td>
+                              <%  if (typeof row.gender !== 'undefined') {  %>
+
+                              <% if(row.gender == 'M'){ %>
+                                Male
+                               <% } else{ %>
+                                 Female
+                              <% } %>
+
+                              <%     }  %>
+                            </td>
+                            <td>
+                              <%  if (typeof row.country !== 'undefined') {  %>
+                              <%= row.country %>
+                              <%     }  %>
+                            </td>
+                            <td>
+                              <%  if (typeof row.category !== 'undefined') {  %>
+                              <%= row.category %>
+                              <%     }  %>
+                            </td>
+                            <td>
+                              <%  if (typeof row.status !== 'undefined') {  %>
+                              <% if(row.status == 1){ %>
+                                Active
+                               <% } else{ %>
+                                 Inactive
+                              <% } %>
+                              <%     }  %>
+                            </td>
+                            <td>
+                              <i class="fa fa-trash" aria-hidden="true" onclick="deleteLawyer('<%= row._id   %>');"></i>
+                              &nbsp
+                              <i class="fa fa-bars" aria-hidden="true" onclick="getLawyerDetails('<%= row._id   %>');"></i>
+                            </td>
+                          </tr>
+                          <% }) %>
+                        </tbody>
+                    </table>
+
+                </div> <!-- end of col -->
+                <!-- pagination start -->
+               <div class="col-lg-12">
+                         <% if (pages > 0) { %>
+                                <ul class="pagination text-center">
+                                    <% if (current == 1) { %>
+                                        <li class="disabled"><a>First</a></li>
+                                    <% } else { %>
+                                        <li><a href="/lawyer/list/1">First</a></li>
+                                    <% } %>
+                                    <% var i = (Number(current) > 5 ? Number(current) - 4 : 1) %>
+                                    <% if (i !== 1) { %>
+                                        <li class="disabled"><a>...</a></li>
+                                    <% } %>
+                                    <% for (; i <= (Number(current) + 4) && i <= pages; i++) { %>
+                                        <% if (i == current) { %>
+                                            <li class="active"><a><%= i %></a></li>
+                                        <% } else { %>
+                                            <li><a href="/lawyer/list/<%= i %>"><%= i %></a></li>
+                                        <% } %>
+                                        <% if (i == Number(current) + 4 && i < pages) { %>
+                                            <li class="disabled"><a>...</a></li>
+                                        <% } %>
+                                    <% } %>
+                                    <% if (current == pages) { %>
+                                        <li class="disabled"><a>Last</a></li>
+                                    <% } else { %>
+                                        <li><a href="/lawyer/list/<%= pages %>">Last</a></li>
+                                    <% } %>
+                                </ul>
+                            <% } %>
+                 </div>
+                <!-- pagination end -->
+                <div class="col-lg-12">
+                    <button type="button" class="btn btn-info btn-lg" onclick="openCreateLawyerModel();">Create Lawyer</button>
+              </div>
+            </div> <!-- end of row -->
+        </div> <!-- end of container -->
+    </div> <!-- end of cards-1 -->
+    <!-- end of services -->
+
+    <!-- Modal -->
+    <div id="myModalLawyer" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Add Lawyer</h4>
+          </div>
+          <div class="modal-body">
+             <div id="formMsg"></div>
+            <form  method="post" class="lawyer-form" id="lawyer-form">
+
+               <input type="hidden" class="form-control lawyer_id" name="lawyer_id">
+
+               <div class="form-group">
+                 <label for="name">Name:</label>
+                 <input type="text" class="form-control name" name="name">
+               </div>
+               <div class="form-group">
+                 <label for="email">Email address:</label>
+                 <input type="email" class="form-control email" name="email">
+               </div>
+               <div class="form-group">
+                 <label for="gender">Gender:</label>
+                    <select class="form-control gender" name="gender">
+                      <option> -- Select -- </option>
+                      <option value="M"> Male </option>
+                      <option value="F"> Female </option>
+                    </select>
+               </div>
+
+               <div class="form-group">
+                 <label for="country">Country:</label>
+                    <select class="form-control country" name="country">
+                      <option> -- Select -- </option>
+                      <option value="1"> India </option>
+                      <option value="2"> China </option>
+                      <option value="3"> Pakistan </option>
+                    </select>
+               </div>
+
+               <div class="form-group">
+                 <label for="country">Country:</label>
+                    <select class="form-control category" name="category">
+                      <option> -- Select -- </option>
+                      <option value="1"> Criminal </option>
+                      <option value="2"> Robbery </option>
+                      <option value="3"> Fraud </option>
+                    </select>
+               </div>
+
+               <div class="form-group">
+                 <label for="country">Status:</label>
+                    <select class="form-control status" name="status">
+                      <option> -- Select -- </option>
+                      <option value="1"> Active </option>
+                      <option value="0"> In-Active </option>
+                    </select>
+               </div>
+
+               <div class="form-group">
+                 <label for="phone">Phone:</label>
+                 <input type="text" class="form-control mobile_no" name="mobile_no">
+               </div>
+
+             <button type="button" class="btn btn-success" onclick="saveLawyer(event)">Submit</button>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function openCreateLawyerModel(){
+          $('.lawyer-form').trigger("reset");
+          $('#myModalLawyer').modal('show');
+      }
+      function getLawyerDetails(id){
+
+             $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url: '/lawyer/get-lawyer-details/'+id,
+                    success: function (response) {
+                         console.log(response);
+                         if(response != ""){
+                            $('.lawyer_id').val(response._id);
+                            $('.name').val(response.name);
+                            $('.email').val(response.email);
+                            $('.gender').val(response.gender);
+                            $('.country').val(response.country);
+                            $('.category').val(response.category);
+                            $('.status').val(response.status);
+                            $('.mobile_no').val(response.mobile_no);
+                            ///$('#myModal').modal('toggle');
+                            $('#myModalLawyer').modal('show');
+                            //$('#myModal').modal('hide');
+                         }
+                    },
+                    error:function(data) {
+                       console.log(data);
+                       alert(data.responseText);
+                    },
+                });
+
+
+      }
+
+      function saveLawyer(e){
+          e.preventDefault();
+           $('#formMsg').html('');
+            $.ajax({
+                   type: 'post',
+                   cache: false,
+                   url: '/lawyer/save-lawyer',
+                   data: $('.lawyer-form').serialize(),
+                   success: function (response) {
+                        console.log(response.status);
+                        if(response != "" && response.status == 200){
+                            var msg =  '<div class="alert alert-success"> Lawyer details  successfully saved. </div>';
+                           $('#formMsg').html(msg);
+                           setTimeout(function(){  location.reload();  $('#formMsg').html(''); }, 2000);
+                           $('.lawyer-form').trigger("reset");
+                        }
+                        if(response != "" && response.status == 201){
+                            var msg =  '<div class="alert alert-success"> Lawyer details successfully updated. </div>';
+                           $('#formMsg').html(msg);
+                           setTimeout(function(){  location.reload();  $('#formMsg').html(''); }, 2000);
+                           $('.lawyer-form').trigger("reset");
+                        }
+                   },
+                   error:function(data) {
+                     var errors = JSON.parse(data.responseText);
+                     var errorsList = '';
+                     for (var i = 0; i < errors.length; i++) {
+                       errorsList += '<li>' + errors[i].msg + '</li>';
+                     }
+                      $('#formMsg').html(errorsList);
+                   },
+               });
+
+      }
+
+      function deleteLawyer(id){
+           if(confirm("Sure you want delete?")){
+             $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url: 'delete-lawyer/'+id,
+                    success: function (response) {
+                         console.log(response);
+                         if(response != "" && response.status == 200){
+                             var msg =  '<div class="alert alert-success"> Deleted  successfully. </div>';
+                            $('#pageMsg').html(msg);
+                            $('.row-'+id).delay(500).fadeOut('slow');
+                            setTimeout(function(){  location.reload();  $('#pageMsg').html(''); }, 2000);
+                         }
+
+                    },
+                    error:function(data) {
+                       console.log(data);
+                      //var errors = JSON.parse(data.responseText);
+                    },
+                });
+
+           }
+      }
+
+      </script>
+ <% include footer %>

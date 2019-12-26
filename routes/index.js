@@ -24,24 +24,13 @@ router.all('/time', function(req, res, next) {
 /*router.get('/error', function(req, res, next) {
    throw new Error('BROKEN')
 }); */
-router.get('/errorrr', function (req, res, next) {
-  fs.readFile('/image.jpg', function (err, data) {
-    if (err) {
-      next(err) // Pass errors to Express.
-    } else {
-      res.send(data)
-    }
-  })
-});
 
-router.get('/error', [
-  function (req, res, next) {
-    fs.writeFile('/inaccessible-path', 'data', next)
-  },
-  function (req, res) {
-    res.send('Yahoo')
-  }
-])
+
+router.get('/error', function (req, res, next) {
+  Promise.resolve().then(function () {
+    throw new Error('BROKEN')
+  }).catch(next) // Errors will be passed to Express.
+})
 
 
 
