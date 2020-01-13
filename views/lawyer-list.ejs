@@ -5,18 +5,30 @@
             <div class="row">
                 <div class="col-lg-12">
                     <h2>Lawyer List</h2>
-                    <h1><%= countryList() %></h1>
-                    <p class="p-heading p-large">We serve small and medium sized.</p>
+                    <!-- <p class="p-heading p-large">We serve small and medium sized.</p> -->
                 </div> <!-- end of col -->
             </div> <!-- end of row -->
             <div class="row">
-
               <div id="pageMsg"></div>
 
               <%=
               //  result
               %>
                 <div class="col-lg-12">
+
+                <!--  <form action="/lawyer/profile" method="post" enctype="multipart/form-data">
+                    <input type="file" name="avatar" />
+                    <input type="submit"  value="Submit">
+                  </form> -->
+                  <!--    <br/>
+                  <form action="/lawyer/profile" method="post" enctype="multipart/form-data">
+                       <input type="file" name="avatar" multiple />
+                         <br/>
+                      <input type="submit"  value="Submit">
+                    </form>
+                     <br/>  !-->
+
+
                   <table class="table">
                         <thead>
                           <tr>
@@ -53,12 +65,12 @@
                             </td>
                             <td>
                               <%  if (typeof row.country !== 'undefined') {  %>
-                              <%= row.country %>
+                              <%= row.country.name %>
                               <%     }  %>
                             </td>
                             <td>
                               <%  if (typeof row.category !== 'undefined') {  %>
-                              <%= row.category %>
+                              <%= row.category.name %>
                               <%     }  %>
                             </td>
                             <td>
@@ -132,10 +144,8 @@
           </div>
           <div class="modal-body">
              <div id="formMsg"></div>
-            <form  method="post" class="lawyer-form" id="lawyer-form">
-
+            <form  method="post" class="lawyer-form" id="lawyerForm" enctype="multipart/form-data">
                <input type="hidden" class="form-control lawyer_id" name="lawyer_id">
-
                <div class="form-group">
                  <label for="name">Name:</label>
                  <input type="text" class="form-control name" name="name">
@@ -156,20 +166,12 @@
                <div class="form-group">
                  <label for="country">Country:</label>
                     <select class="form-control country" name="country">
-                      <option> -- Select -- </option>
-                      <option value="1"> India </option>
-                      <option value="2"> China </option>
-                      <option value="3"> Pakistan </option>
                     </select>
                </div>
 
                <div class="form-group">
-                 <label for="country">Country:</label>
+                 <label for="country">Category:</label>
                     <select class="form-control category" name="category">
-                      <option> -- Select -- </option>
-                      <option value="1"> Criminal </option>
-                      <option value="2"> Robbery </option>
-                      <option value="3"> Fraud </option>
                     </select>
                </div>
 
@@ -187,6 +189,11 @@
                  <input type="text" class="form-control mobile_no" name="mobile_no">
                </div>
 
+                <div class="form-group">
+                 <label for="phone">Photo:</label>
+                 <input type="file" class="form-control photo" name="photo" id="lawyer-photo">
+               </div>
+
              <button type="button" class="btn btn-success" onclick="saveLawyer(event)">Submit</button>
             </form>
           </div>
@@ -198,6 +205,28 @@
     </div>
 
     <script>
+    /*********** Image upload ***************/
+    $("#lawyer-photo").change(function() {
+		   //readURL(this);
+       uploadPhoto();
+		});
+
+    function uploadPhoto(){
+      var files = $('#photos-input').get(0).files,
+          formData = new FormData();
+
+      // Append the files to the formData.
+      for (var i=0; i < files.length; i++) {
+          var file = files[i];
+          formData.append('photos[]', file, file.name);
+      }
+
+        uploadFiles(formData);
+    }
+
+
+  /*********** Image upload End***************/
+
       function openCreateLawyerModel(){
           $('.lawyer-form').trigger("reset");
           $('#myModalLawyer').modal('show');
@@ -236,11 +265,15 @@
       function saveLawyer(e){
           e.preventDefault();
            $('#formMsg').html('');
+            //var form = $('#lawyerForm')[0];
+            //var formData = new FormData(form);
             $.ajax({
-                   type: 'post',
-                   cache: false,
+                   method: 'post',
                    url: '/lawyer/save-lawyer',
+                  // processData: false,
+                   //contentType: false,
                    data: $('.lawyer-form').serialize(),
+                    // data: formData,
                    success: function (response) {
                         console.log(response.status);
                         if(response != "" && response.status == 200){
@@ -292,6 +325,49 @@
 
            }
       }
+
+      function getCountry(){
+          var options =  '<option value="">Please select</option>';
+             $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url:  '<%= siteUrl %>lawyer/country/',
+                    success: function (response) {
+                             $.each(response, function (i, v) {
+                                  options +=  `<option value="`+v._id+`">`+v.name+`</option>`;
+                              })
+                              $(".country").append(options);
+                    },
+                    error:function(data) {
+                      // console.log(data);
+                      //var errors = JSON.parse(data.responseText);
+                    },
+                });
+      }
+
+      function getCategory(){
+          var options =  '<option value="">Please select</option>';
+             $.ajax({
+                    type: 'GET',
+                    cache: false,
+                    url: '<%= siteUrl %>lawyer/category/',
+                    success: function (response) {
+                             $.each(response, function (i, v) {
+                                  options +=  `<option value="`+v._id+`">`+v.name+`</option>`;
+                              })
+                              $(".category").append(options);
+                    },
+                    error:function(data) {
+                      // console.log(data);
+                      //var errors = JSON.parse(data.responseText);
+                    },
+                });
+      }
+
+      $( document ).ready(function() {
+         getCountry();
+         getCategory();
+      });
 
       </script>
  <% include footer %>

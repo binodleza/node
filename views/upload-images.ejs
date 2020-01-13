@@ -1,0 +1,127 @@
+ <% include header %>
+    <!-- Services -->
+    <div id="services" class="cards-1">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2>Lawyer List</h2>
+                    <!-- <p class="p-heading p-large">We serve small and medium sized.</p> -->
+                </div> <!-- end of col -->
+            </div> <!-- end of row -->
+            <div class="row">
+                <div class="col-lg-12">
+
+                  <form id="upload-photos" method="post" action="/upload_photos" enctype="multipart/form-data">
+                         <div class="form-group">
+                             <label for="photos-input">File input</label>
+                             <input id="photos-input" type="file" name="photos[]" multiple="multiple" >
+                             <p class="help-block">You can upload up to 3 files.</p>
+                         </div>
+                         <input type="hidden" name="csrf_token" value="just_a_text_field" />
+                         <input class="btn btn-default" type="submit" name="Photo Uploads" value="Upload Photos" />
+                  </form>
+
+                  <div class="row">
+                  <div class="col-md-12">
+                      <div class="progress">
+                          <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+                              <span class="sr-only"></span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+                </div>
+
+                <div class="col-lg-12">
+                    <div id="album" class="row"></div>
+                </div>
+            </div> <!-- end of row -->
+        </div> <!-- end of container -->
+    </div> <!-- end of cards-1 -->
+    <!-- end of services -->
+
+    <!-- Modal -->
+
+
+      <script>
+
+        function uploadFiles(formData) {
+    $.ajax({
+        url: '/upload/upload_photos',
+        method: 'post',
+        data: formData,
+        processData: false,
+        contentType: false,
+        xhr: function () {
+            var xhr = new XMLHttpRequest();
+
+            // Add progress event listener to the upload.
+            xhr.upload.addEventListener('progress', function (event) {
+                var progressBar = $('.progress-bar');
+
+                if (event.lengthComputable) {
+                    var percent = (event.loaded / event.total) * 100;
+                    progressBar.width(percent + '%');
+
+                    if (percent === 100) {
+                        progressBar.removeClass('active');
+                    }
+                }
+            });
+
+            return xhr;
+        }
+    }).done(handleSuccess).fail(function (xhr, status) {
+        alert(status);
+    });
+}
+
+
+function handleSuccess(data) {
+    if (data.length > 0) {
+        var html = '';
+        for (var i=0; i < data.length; i++) {
+            var img = data[i];
+
+            if (img.status) {
+                html += '<div class="col-xs-6 col-md-4"><a href="#" class="thumbnail"><img src="' + img.publicPath + '" alt="' + img.filename  + '"></a></div>';
+            } else {
+                html += '<div class="col-xs-6 col-md-4"><a href="#" class="thumbnail">Invalid file type - ' + img.filename  + '</a></div>';
+            }
+        }
+
+        $('#album').html(html);
+    } else {
+        alert('No images were uploaded.')
+    }
+}
+
+        $('#upload-photos').on('submit', function (event) {
+            event.preventDefault();
+
+            // Get the files from input, create new FormData.
+            var files = $('#photos-input').get(0).files,
+                formData = new FormData();
+
+            if (files.length === 0) {
+                alert('Select atleast 1 file to upload.');
+                return false;
+            }
+
+            if (files.length > 3) {
+                alert('You can only upload up to 3 files.');
+                return false;
+            }
+
+            // Append the files to the formData.
+            for (var i=0; i < files.length; i++) {
+                var file = files[i];
+                formData.append('photos[]', file, file.name);
+            }
+
+            // Note: We are only appending the file inputs to the FormData.
+            uploadFiles(formData);
+        });
+      </script>
+ <% include footer %>

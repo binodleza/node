@@ -9,11 +9,12 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var lawyerRouter = require('./routes/lawyer');
+var uploadRouter = require('./routes/upload');
 
 var app = express();
-
 /*********   Helpers        *******/
 app.locals.siteTitle = "The Lawyer App";
+app.locals.siteUrl = 'http://localhost:3000/';
 app.locals.someHelper = function(name) {
   return ("hello " + name);
 }
@@ -32,6 +33,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/lawyer', lawyerRouter);
+app.use('/upload', uploadRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

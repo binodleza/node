@@ -7,11 +7,14 @@ useUnifiedTopology: true
 
 var conn = mongoose.connection;
 
- var schemaCountry = new mongoose.Schema({
-   name: String
+ var schemaCountry = new mongoose.Schema({ 
+   name: {
+    type: String,
+    required: true
+  }
  }, {
      collection: 'country'
  });
 
- var  modelCountry = mongoose.model('modelCountry', schemaCountry);
+ var  modelCountry = mongoose.model('country', schemaCountry);
  module.exports = modelCountry;
