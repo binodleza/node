@@ -60,8 +60,10 @@
           </style>
       </head>
       <body>
+         <div style="color:green;" class="userTyping"></div>
           <ul class="messages"></ul>
           <form>
+
               <input type="text" class="input" autocomplete="off" autofocus />
               <button>Send</button>
           </form>
@@ -106,10 +108,18 @@
                      addMessage(data + " has left the chat.");
               });
 
+              socket.on("notify_user_typing", function(data) {
+                       const userTyping = document.querySelector(".userTyping");
+                       userTyping.innerHTML = data.message;
+                       setTimeout(function(){   userTyping.innerHTML = '';   }, 1300);
+              });
+
 
               addMessage("You have joined the chat as '" + username  + "'.");
               socket.emit("user_join", username);
- 
+
+             socket.emit("new_user_join", username);
+
               function addMessage(message) {
                   const li = document.createElement("li");
                   li.innerHTML = message;

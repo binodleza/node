@@ -6,9 +6,6 @@ var bodyParser = require('body-parser');
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({ extended: true }));
 
-var app = express();
-var server = app.listen(8810);
-var io = require('socket.io').listen(server);
 
 
  router.get('/', function(req, res, next) {
@@ -16,7 +13,8 @@ var io = require('socket.io').listen(server);
       res.render('chat-index')
 });
 
-  io.on("connection", function(socket) {
+
+/*  io.on("connection", function(socket) {
 
   console.log('Client connected successfully...');
 
@@ -41,7 +39,7 @@ var io = require('socket.io').listen(server);
       socket.on("disconnect", function(data) {
           socket.broadcast.emit("user_leave", this.username);
     });
-  });
+  }); */
 
 
 module.exports = router;
